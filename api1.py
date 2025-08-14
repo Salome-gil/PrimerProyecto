@@ -1,7 +1,7 @@
-def Sumar(num1:int, num2:int)-> int:
-    Respuesta= num1 + num2
+def Resta(num1:int, num2:int)-> int:
+    Respuesta= num1 - num2
     return Respuesta
 
-Resultado= Sumar(1,2)
+Resultado= Resta(1,2)
 print(Resultado)
     
