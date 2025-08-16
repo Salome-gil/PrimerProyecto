@@ -1,9 +1,10 @@
-# PrimerProyecto
+# Biblioteca ITM
+
 Primer 20% Programación de Software
 <hr>
 
 ### 1.  Enunciado
-Se desea crear un sitio web que permita realizar Préstamos Bibliotecarios. El sitio interactúa con clientes (estudiante, empleados y profesores) y con usuarios (organizador o bibliotecario y administrador). Los clientes vía WEB pueden consultar préstamos, material bibliográfico en mora e historial de préstamos, renovar préstamo y reservar material bibliográfico. El Bibliotecario puede realizar préstamos, consultar material disponible, consultar libros más prestados, consultar prestamos atrasados, además actualiza el estado físico de los libros y genera un informe diario de cantidad de libros prestados y en mora.
+Se desea crear un sistema que permita realizar Préstamos Bibliotecarios. El sitio interactúa con clientes (estudiante, empleados y profesores) y con usuarios (organizador o bibliotecario y administrador). Los clientes vía WEB pueden consultar préstamos, material bibliográfico en mora e historial de préstamos, renovar préstamo y reservar material bibliográfico. El Bibliotecario puede realizar préstamos, consultar material disponible, consultar libros más prestados, consultar prestamos atrasados, además actualiza el estado físico de los libros y genera un informe diario de cantidad de libros prestados y en mora.
 
 ### Prestar Material bibliográfico: 
 - Al momento de realizar un préstamo el cliente llega donde el bibliotecario con el libro a prestar. A continuación, el bibliotecario ingresa el código del cliente (Carnet si es estudiante y  cédula si es empleado o docente) y el código del libro con lector de código de barras, posteriormente el sistema valida que el cliente exista, que el material bibliográfico exista y su estado sea disponible, una vez todas las condiciones se cumplen el sistema procede a realizar el préstamo, dentro de este proceso se cambia el estado del material bibliográfico de disponible a no disponible y aparece un mensaje indicando que el préstamo fue realizado  exitosamente con los datos del cliente(carnet o cédula según sea el caso),  la fecha de préstamo y la fecha de  entrega. 
