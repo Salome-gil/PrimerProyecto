@@ -1,33 +1,53 @@
-# Biblioteca ITM
+# 📚 Sistema de Gestión de Biblioteca
 
-Primer 20% Programación de Software
-<hr>
+Este proyecto implementa un sistema de gestión de biblioteca con **Python** tilizando principios de **Programación Orientada a Objetos (POO)** como **herencia, polimorfismo, encapsulamiento y reutilización de código** y **Tkinter** para la interacción mediante ventanas emergentes.  
 
-### 1.  Enunciado
-Se desea crear un sistema que permita realizar Préstamos Bibliotecarios. El sitio interactúa con clientes (estudiante, empleados y profesores) y con usuarios (organizador o bibliotecario y administrador). Los clientes vía WEB pueden consultar préstamos, material bibliográfico en mora e historial de préstamos, renovar préstamo y reservar material bibliográfico. El Bibliotecario puede realizar préstamos, consultar material disponible, consultar libros más prestados, consultar prestamos atrasados, además actualiza el estado físico de los libros y genera un informe diario de cantidad de libros prestados y en mora.
+Permite administrar **clientes**, **material bibliográfico** y **préstamos**, incluyendo funcionalidades de búsqueda, reserva, renovación y devoluciones.  
 
-### Prestar Material bibliográfico: 
-- Al momento de realizar un préstamo el cliente llega donde el bibliotecario con el libro a prestar. A continuación, el bibliotecario ingresa el código del cliente (Carnet si es estudiante y  cédula si es empleado o docente) y el código del libro con lector de código de barras, posteriormente el sistema valida que el cliente exista, que el material bibliográfico exista y su estado sea disponible, una vez todas las condiciones se cumplen el sistema procede a realizar el préstamo, dentro de este proceso se cambia el estado del material bibliográfico de disponible a no disponible y aparece un mensaje indicando que el préstamo fue realizado  exitosamente con los datos del cliente(carnet o cédula según sea el caso),  la fecha de préstamo y la fecha de  entrega. 
-- En caso de que el código del cliente no exista o el material bibliográfico no esté disponible, el sistema arroja un mensaje correspondiente a la inconsistencia indicando que no es posible realizar el préstamo.
-- En caso de que el material bibliográfico haya sido reservado por otro cliente el préstamo no se puede realizar.
+## 🗂️ Estructura del proyecto
+- `main.py` → Archivo principal que contiene los menús e inicia la aplicación.  
+- `Biblioteca.py` → Lógica central del sistema (gestión de clientes, materiales, préstamos y reservas).  
+- `Cliente.py` → Definición de las clases `Cliente`, `Estudiante`, `Profesor` y `Empleado`.  
+- `Material_Bibliografico.py` → Manejo de los materiales (estado, reservas, disponibilidad).  
+- `Prestamo.py` → Definición de la clase `Prestamo` y sus operaciones.  
 
-### Renovar Préstamo: 
-- El cliente se acerca al bibliotecario con un material bibliográfico que desea renovar el préstamo, el bibliotecario debe validar que el préstamo exista y que el cliente si sea el que tiene en préstamo el material bibliográfico, también debe verificar que éste no se encuentre reservado para la fecha que requiere el cliente la renovación. 
-- En caso de poder realizarse la renovación se debe cambiar en el préstamo la fecha de entrega por la nueva fecha, y actualizar el estado del material bibliográfico a “No disponible”. 
-- Si el cliente no es el mismo que aparece en el préstamo, el bibliotecario cancela la renovación e informa al cliente. 
-- Si el código del material bibliográfico no es válido, se imprime un mensaje “El código del material bibliográfico no se encuentra en el sistema”.
-- Según las normas de la institución no se pueden renovar ni prestar materiales bibliográficos si estos se encuentran reservados, además todo préstamo se debe conservar, y las renovaciones deben actualizar la fecha de entrega del préstamo. 
-- Para renovar un préstamo, el día en que termina el préstamo el cliente puede diligenciar la renovación solo si el material no ha sido reservado para esa fecha de entrega. De forma presencial el recepcionista pide al cliente el código del cliente, el código del material bibliográfico y la nueva fecha de entrega y lo renueva. O vía web el cliente ingresa la nueva fecha de entrega y lo renueva. 
+## ⚙️ Requisitos
+Antes de ejecutar el proyecto, asegúrate de tener instalado:  
+- Python **3.9+**  
+- Tkinter (viene incluido en la mayoría de instalaciones de Python)  
 
-### Devolver material bibliográfico: 
-- El estudiante entrega el material bibliográfico, el bibliotecario ingresa los datos del material bibliográfico, verifica si el préstamo existe, luego verifica que el material bibliográfico sea ingresado antes o en la fecha indicada para luego cancelar el préstamo. Por último, actualiza el estado del material bibliográfico.
+## ▶️ Ejecución paso a paso
+1. **Clonar o descargar el repositorio en *Visual Studio Code***  
+   ```bash
+   git clone <URL-del-repositorio>
+   ```
 
-### Cancelación de reserva: 
-- Es similar a la opción de reserva. Vía web, el cliente consulta con el código del material bibliográfico la reserva y se cancela
+2. **Verificar que todos los archivos están en la misma carpeta**:  
+   - `main.py`  
+   - `Biblioteca.py`  
+   - `Cliente.py`  
+   - `Material_Bibliografico.py`  
+   - `Prestamo.py`
 
+3. **Ejecutar el archivo principal**  
+   ```bash
+   python main.py
+   ```
 
-<hr>
+4. **Uso del programa**  
+   - Al ejecutar, se abrirá el **menú principal** con opciones:  
+     1. Gestión de clientes  
+     2. Gestión de materiales bibliográficos  
+     3. Gestión de préstamos  
+     0. Salir  
+     
+   - Dentro de cada sección podrás:  
+     - **Clientes**: agregar, buscar, ver listado y ver clientes vetados.  
+     - **Materiales**: agregar, buscar, ver listado, reservar y cancelar reservas.  
+     - **Préstamos**: prestar material, ver préstamos, buscar, renovar, devolver y eliminar préstamos.  
 
-## Equipo de Trabajo
-#### Maria Fernanda Palacio Agudelo
-#### Salome Gil Chanci
+5. **Interfaz gráfica**  
+   Todas las interacciones se hacen mediante **ventanas emergentes (messagebox y simpledialog de Tkinter)**.  
+
+## 👨‍💻 Autores
+Proyecto académico desarrollado en Python por: ***Maria Fernanda Palacio*** y ***Salomé Gil***
