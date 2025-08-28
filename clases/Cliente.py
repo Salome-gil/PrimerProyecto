@@ -57,3 +57,42 @@ class Cliente:
     # Indica si el cliente está vetado.
     def es_vetado(self) -> bool:
         return self.__vetado
+
+
+class Estudiante(Cliente):
+    
+    def __init__(self, codigo: int, nombre: str, carrera: str, vetado: bool= False) -> None:
+        super().__init__(codigo, nombre, vetado)
+        self.__carrera= carrera
+
+    def tipo_cliente(self) -> str:
+        return "Estudiante"
+    
+    def __str__(self) -> str:
+        return super().__str__() + f", Clasificación: {self.tipo_cliente()}, Carrera: {self.__carrera}"
+
+
+class Profesor(Cliente):
+   
+    def __init__(self, codigo: int, nombre: str, facultad: str, vetado: bool= False) -> None:
+        super().__init__(codigo, nombre, vetado)
+        self.__facultad= facultad
+
+    def tipo_cliente(self) -> str:
+        return "Profesor"
+    
+    def __str__(self) -> str:
+        return super().__str__() + f", Clasificación: {self.tipo_cliente()}, Facultad: {self.__facultad}"
+
+
+class Empleado(Cliente):
+    
+    def __init__(self, codigo: int, nombre: str, cargo: str, vetado: bool= False) -> None:
+        super().__init__(codigo, nombre, vetado)
+        self.__cargo= cargo
+    
+    def tipo_cliente(self) -> str:
+        return "Empleado"
+
+    def __str__(self) -> str:
+        return super().__str__() + f", Clasificación: {self.tipo_cliente()}, Cargo: {self.__cargo}"
