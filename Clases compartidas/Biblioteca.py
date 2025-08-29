@@ -426,3 +426,17 @@ class Biblioteca:
         lista = "\n".join(str(cli) for cli in vetados) # Llama al metodo __str__() de la clase cliente
         messagebox.showinfo("Lista de Clientes vetados", lista)
         return True
+    
+#------------------------------------------------------------------------------------------
+# METODOS DE VALIDACIÓN
+# -----------------------------------------------------------------------------------------     
+    # Solicita al usuario ingresar un texto que contenga únicamente letras.
+    def ingresar_solo_letras(self, text1: str, text2: str) -> str:
+
+        while True: # Se repetirá hasta que se cumpla una condición de salida dentro del bucle.
+            valor= simpledialog.askstring(text1, text2)
+            if valor is None:
+                return None
+            if all(palabra.isalpha() for palabra in valor.split()): # Se verifica que cada palabra tenga solo letras (sin números ni símbolos).
+                return valor.strip()  # elimina espacios al inicio y final de la cadena.
+            messagebox.showerror("Error", "Solo se permiten letras. Intente de nuevo.")
