@@ -228,8 +228,83 @@ class Biblioteca:
         nueva_fecha= prestamo.get_fecha_entrega() + timedelta(days=7)
         prestamo.renovar_prestamo(nueva_fecha)
 
-        # Asegurar que el material siga marcado como no disponible
+        ## Asegurar que el material siga marcado como no disponible
         material.marcar_no_disponible()
 
         messagebox.showinfo("Renovación exitosa", f"Prestamo con ID: {prestamo.get_id()} renovado. Nueva fecha de entrega: {nueva_fecha}.")
         return True
+    
+    def devolver_material(self, cod_cliente: int, cod_material: int) -> bool:
+        
+        # Verificar que exista cliente
+        cliente: Optional[Cliente] = None
+        for cli in self._clientes:
+            if cli.get_codigo() == cod_cliente:
+                cliente= cli
+                break
+
+        if cliente is None:
+            messagebox.showerror("Error", f"No existe cliente con ID {cod_cliente}.")
+            return False
+        
+        material: Optional[Material_Bibliografico] = None
+        for mat in self._materiales:
+            if mat.get_Id() == cod_material:
+                material= mat
+                break
+
+        if material is None:
+            messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
+            return False
+        
+        prestamo: Optional[Prestamo] = None
+        for pre in self._prestamos:
+            if pre.get_cod_cliente() == cod_cliente and pre.get_cod_material() == cod_material:
+                    prestamo= pre
+                    break
+            
+        if prestamo is None:
+            messagebox.showerror("Error", f"No existe un prestamo del cliente con ID {cod_cliente} con el material bibliografico {cod_material}.")
+            return False
+        
+        fecha_devolucion= date.today()
+        if fecha_devolucion > prestamo.get_fecha_entrega():
+            cliente.marcar_vetado()
+            dias = (fecha_devolucion - prestamo.get_fecha_entrega()).days
+            messagebox.showwarning("Devolución", f"Devolución con retraso de {dias} día(s). Cliente {cliente.get_nombre()} ha sido vetado.")
+        else:
+            messagebox.showinfo("Devolución", f"Devolución realizada a tiempo. ¡Gracias {cliente.get_nombre()}!")
+
+        material.marcar_disponible()
+        self._prestamos.remove(prestamo)
+        messagebox.showinfo("Devolución", f"Devolución realizada con éxito.\nPréstamo ID: {prestamo.get_id()}, Cliente: {cliente.get_nombre()}, Material bibliografico: {cod_material}.")
+        return True
+    
+    def cancelar_reserva(self, cod_cliente: int, cod_material: int) -> bool:
+
+        # Validar que el cliente exista
+        cliente: Optional[Cliente] = None
+        for cli in self._clientes:
+            if cli.get_codigo() == cod_cliente:
+                cliente= cli
+                break
+        if cliente is None:
+            messagebox.showerror("Error", f"No existe un cliente con ID {cod_cliente}.")
+            return False
+        material: Optional[Material_Bibliografico] = None
+        for mat in self._materiales:
+            if mat.get_Id() == cod_material:
+                material= mat
+                break
+        if material is None:
+            messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
+            return False
+        if not material.get_reservado():
+            messagebox.showerror("Error", f"El material bibliografico con ID {cod_material} No se encuentra reservado.")
+            return False
+        if material.cancelar_reserva(cod_cliente):
+            messagebox.showinfo("Reserva cancelada", f"La reserva del material {cod_material} ha sido cancelada por el cliente {cliente.get_nombre()}.")
+            return True
+        else:
+            messagebox.showwarning("Cancelar reserva", f"El material {cod_material} fue reservado por otro cliente.")
+            return False
