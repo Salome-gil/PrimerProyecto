@@ -51,3 +51,5 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 ## 👨‍💻 Autores
 Proyecto académico desarrollado en Python por: ***Maria Fernanda Palacio*** y ***Salomé Gil***
+***2025***
+
