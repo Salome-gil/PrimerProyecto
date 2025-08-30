@@ -38,10 +38,10 @@ def menu_principal():
                 case 1: # Menú de clientes
                     menu_clientes()
                 case 2: # Menú de material
-                  ##  menu_materiales()
-                ##case 3: # Menú de prestamos
-                   ## menu_prestamos()
-               # case _: # Opcion invalida
+                    menu_materiales()
+                case 3: # Menú de prestamos
+                    menu_prestamos()
+                case _: # Opcion invalida
                     messagebox.showerror("Error", "Opción no válida")
 
         except ValueError :
@@ -159,3 +159,140 @@ def menu_clientes():
         except ValueError :
                 messagebox.showwarning("Error", "Opción no válida")
         
+# ---------------------------
+# SUBMENÚ MATERIALES
+# ---------------------------
+def menu_materiales():
+    opcion = -1
+    while opcion != 0:
+        menu = (
+            "--- MATERIALES BIBLIOGRÁFICOS ---\n"
+            "1. Agregar material\n"
+            "2. Ver materiales\n"
+            "3. Buscar material\n"
+            "4. Reservar material\n"
+            "5. Cancelar reserva\n"
+            "0. Volver al menú principal\n"
+        )
+        resp = simpledialog.askinteger("Materiales", menu)
+        if resp is None:  
+            break
+
+        try:
+            opcion= int(resp)
+            match opcion:
+                case 0: 
+                    messagebox.showinfo("Salir", "Vuelves al menú principal")
+
+                case 1: 
+                    codigo= simpledialog.askinteger("ID", "Ingrese el ID del material bibliografico: ")
+                    material= Material_Bibliografico(codigo, "disponible", None, False)
+                    bib.agregar_material(material)
+
+                case 2: 
+                    bib.ver_materiales()
+
+                case 3: 
+                    buscar_cod= simpledialog.askinteger("ID", "Ingrese el ID del material bibliografico a buscar: ")
+                    if buscar_cod is None:
+                        messagebox.showwarning("ADVERTENCIA", "Debe de ingresar un ID")
+                    else:
+                        bib.buscar_material(buscar_cod)
+
+                case 4: 
+                    cod_cliente= simpledialog.askinteger("Código cliente", "Ingrese código del cliente para la reserva: ")
+                    cod_material= simpledialog.askinteger("ID material bibliografico", "Ingrese el ID del material bibliografico para reservar: ")
+                    resp= bib.reservar_material(cod_cliente, cod_material)
+
+                    if not resp:
+                        messagebox.showerror("Error", "No se pudo realizar la reserva.")
+
+                case 5: 
+                    cod_cliente= simpledialog.askinteger("Código cliente", "Ingrese código del cliente para cancelar la reserva: ")
+                    cod_material= simpledialog.askinteger("ID material bibliografico", "Ingrese el ID del material bibliografico para cancelar la reservar: ")
+                    resp= bib.cancelar_reserva(cod_cliente, cod_material)
+
+                    if not resp:
+                        messagebox.showerror("Error", "No se pudo cancelar la reserva.")
+
+                case _: 
+                    messagebox.showerror("Error", "Opción no válida")
+
+        except ValueError :
+                messagebox.showwarning("Error", "Opción no válida")        
+
+# ---------------------------
+# SUBMENÚ PRÉSTAMOS
+# ---------------------------
+def menu_prestamos():
+    opcion = -1
+    while opcion != 0:
+        menu = (
+            "--- PRÉSTAMOS ---\n"
+            "1. Prestar material\n"
+            "2. Ver préstamos\n"
+            "3. Buscar préstamo\n"
+            "4. Renovar préstamo\n"
+            "5. Devolver material\n"
+            "6. Eliminar préstamo\n"
+            "0. Volver al menú principal\n"
+        )
+        resp = simpledialog.askinteger("Préstamos", menu)
+        if resp is None:  
+            break
+
+        try:
+            opcion= int(resp)
+            match opcion:
+                case 0: 
+                    messagebox.showinfo("Salir", "Vuelves al menú principal")
+
+                case 1: 
+                    cod_cli= simpledialog.askinteger("Código", "Ingrese el código del cliente para el prestamo: ")
+                    cod_mat= simpledialog.askinteger("ID", "Ingrese el ID del material bibliografico para el prestamo: ")
+                    resp= bib.prestar_material(cod_cli, cod_mat)
+
+                    if not resp:
+                        messagebox.showerror("Error", "No se pudo realizar el prestamo.")
+
+                case 2: 
+                    bib.ver_prestamos()
+
+                case 3: 
+                    cod_prestamo= simpledialog.askinteger("ID", "Ingrese el ID del prestamo a buscar: ")
+                    if cod_prestamo is None:
+                        messagebox.showwarning("ADVERTENCIA", "Debe de ingresar un código")
+                    else:
+                        bib.buscar_prestamo(cod_prestamo)
+
+                case 4: 
+                    cod_cli= simpledialog.askinteger("Código", "Ingrese el código del cliente para renovar el prestamo: ")
+                    cod_mat= simpledialog.askinteger("ID", "Ingrese el ID del material bibliografico para renovar el prestamo: ")
+                    resp= bib.renovar_prestamo(cod_cli, cod_mat)
+
+                    if not resp:
+                        messagebox.showerror("Error", "No se pudo realizar la renovación del prestamo.")
+
+                case 5: 
+                    cod_cli= simpledialog.askinteger("Código", "Ingrese el código del cliente para devolver el prestamo: ")
+                    cod_mat= simpledialog.askinteger("ID", "Ingrese el ID del material bibliografico para devolver el prestamo: ")
+                    resp= bib.devolver_material(cod_cli, cod_mat)
+                    
+                    if not resp:
+                        messagebox.showerror("Error", "No se pudo realizar la devolución del prestamo.")
+
+                case 6: 
+                    cod_pres= simpledialog.askinteger("ID", "Ingrese el ID del prestamo a eliminar: ")
+                    bib.eliminar_prestamo(cod_pres)
+
+                case _:
+                    messagebox.showerror("Error", "Opción no válida")
+
+        except ValueError :
+                messagebox.showwarning("Error", "Opción no válida")       
+
+# ---------------------------
+# MAIN
+# ---------------------------
+if __name__ == "__main__":
+    menu_principal()
