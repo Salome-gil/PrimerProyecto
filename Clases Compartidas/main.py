@@ -291,8 +291,3 @@ def menu_prestamos():
         except ValueError :
                 messagebox.showwarning("Error", "Opción no válida")       
 
-# ---------------------------
-# MAIN
-# ---------------------------
-if __name__ == "__main__":
-    menu_principal()
