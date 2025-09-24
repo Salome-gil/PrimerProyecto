@@ -1,81 +1,79 @@
+from Cliente import Cliente
+from Material_Bibliografico import Material_Bibliografico
 from datetime import date
 
 class Prestamo:
+    """
+    Representa un préstamo de material bibliográfico realizado por un cliente.
+    """
 
-    # Constructor de la clase Prestamo, con atributos privados
-    def __init__(self, Id: int, cod_cliente: int, cod_material: int, fecha_prestamo: date, fecha_entrega: date) -> None:
-        self.__Id = Id
-        self.__cod_cliente = cod_cliente
-        self.__cod_material = cod_material
+    def _init_(self, Id: int, cliente: Cliente, material: Material_Bibliografico, fecha_prestamo: date, fecha_entrega: date):
+        """
+        Inicializa un nuevo préstamo.
+
+        Args:
+            Id (int): Identificador único del préstamo.
+            cliente (Cliente): Cliente que realiza el préstamo.
+            material (Material_Bibliografico): Material bibliográfico prestado.
+            fecha_prestamo (date): Fecha en la que se realizó el préstamo.
+            fecha_entrega (date): Fecha límite de entrega del material.
+        """
+        self.Id = Id
+        self.cliente = cliente
+        self.material = material
         self.__fecha_prestamo = fecha_prestamo
         self.__fecha_entrega = fecha_entrega
 
-    # Obtiene el ID del préstamo.
-    def get_id(self) -> int:
-        return self.__Id
-    
-    # Modifica el ID del préstamo.
-    def set_id(self, id: int) -> None:
-        self.__Id= id
-
-    # Obtiene el código del cliente asociado al préstamo.
-    def get_cod_cliente(self) -> int:
-        return self.__cod_cliente
-    
-    # Modifica el código del cliente asociado al préstamo.
-    def set_cod_cliente(self, cod_cliente: int) -> None:
-        self.__cod_cliente= cod_cliente
-
-    # Obtiene el código del material bibliográfico prestado.
-    def get_cod_material(self) -> int:
-        return self.__cod_material
-    
-    # Modifica el código del material bibliográfico prestado.
-    def set_cod_material(self, cod_material: int) -> None:
-        self.__cod_material= cod_material
-
-    # Obtiene la fecha en que se realizó el préstamo.
     def get_fecha_prestamo(self) -> date:
+        """
+        Obtener la fecha del préstamo.
+
+        Returns:
+            date: Fecha en que se realizó el préstamo.
+        """
         return self.__fecha_prestamo
     
-    # Modifica la fecha en que se realizó el préstamo.
     def set_fecha_prestamo(self, fecha_prestamo: date) -> None:
+        """
+        Establecer una nueva fecha de préstamo.
+
+        Args:
+            fecha_prestamo (date): Nueva fecha del préstamo.
+        """
         self.__fecha_prestamo= fecha_prestamo
 
-    # Obtiene la fecha de entrega pactada del préstamo.
     def get_fecha_entrega(self) -> date:
+        """
+        Obtener la fecha de entrega del préstamo.
+
+        Returns:
+            date: Fecha límite para devolver el material.
+        """
         return self.__fecha_entrega
     
-    # Modifica la fecha de entrega pactada del préstamo.
     def set_fecha_entrega(self, fecha_entrega: date) -> None:
+        """
+        Establecer una nueva fecha de entrega.
+
+        Args:
+            fecha_entrega (date): Nueva fecha de devolución del material.
+        """
         self.__fecha_entrega= fecha_entrega
 
-    # toString() - Representación en cadena del préstamo.
-    def __str__(self) -> str:
-        return f"Código: {self.__Id}, Código cliente: {self.__cod_cliente}, Código material bibliográfico: {self.__cod_material}, Fecha del préstamo: {self.__fecha_prestamo}, Fecha de entrega: {self.__fecha_entrega}"
+    def _str_(self) -> str:
+        """
+        Representación en cadena del préstamo.
 
-#------------------------------------------------------------------------------------- 
-# Métodos adicionales de para el prestamo
-#------------------------------------------------------------------------------------- 
+        Returns:
+            str: Información detallada del préstamo (cliente, material y fechas).
+        """
+        return f"ID: {self.Id}, Cliente: {self.cliente.nombre}, Material Bibliográfico: {self.material.titulo}, Fecha del préstamo: {self._fecha_prestamo}, Fecha de entrega: {self._fecha_entrega}"
 
-    # Renueva el préstamo modificando la fecha de entrega.
     def renovar_prestamo(self, nueva_fecha_entrega: date) -> None:
+       """
+        Renovar el préstamo cambiando la fecha de entrega.
+
+        Args:
+            nueva_fecha_entrega (date): Nueva fecha límite para devolver el material.
+        """
        self.__fecha_entrega = nueva_fecha_entrega
-
-    # Verifica si el préstamo ya está vencido.
-    def es_vencido(self, fecha_actual: date) -> bool:
-        return fecha_actual > self.__fecha_entrega
-
-    # Calcula los días de atraso en la entrega.
-    def dias_atraso(self, fecha_actual: date) -> int:
-        if fecha_actual > self.__fecha_entrega:
-            return (fecha_actual - self.__fecha_entrega).days
-        return 0
-
-    # Verifica si el préstamo pertenece a un cliente específico.
-    def pertenece_a_cliente(self, cod_cliente: int) -> bool:
-        return self.__cod_cliente == cod_cliente
-
-    # Verifica si el préstamo corresponde a un material específico.
-    def es_del_material(self, cod_material: int) -> bool:
-        return self.__cod_material == cod_material

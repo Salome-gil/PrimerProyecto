@@ -1,121 +1,271 @@
+"""
+Módulo de gestión de biblioteca
+
+Contiene la clase `Biblioteca`, que administra clientes, materiales bibliográficos,
+préstamos, reservas, sanciones y categorías. Permite realizar operaciones de
+agregar, buscar, listar, prestar, devolver, reservar y sancionar.
+"""
+
 from typing import List, Optional
 from Cliente import Cliente 
 from Material_Bibliografico import Material_Bibliografico
 from Prestamo import Prestamo
+from Reserva import Reserva
+from Sancion import Sancion
+from Categoria import Categoria
 from datetime import date, timedelta
 from tkinter import messagebox, simpledialog
 
 class Biblioteca:
 
-    # Constructor de la clase Biblioteca, inicializa las listas de clientes, materiales y préstamos.
-    def __init__(self) -> None:
+    def __init__(self, nombre: str):
+        """
+        Inicializa una nueva instancia de Biblioteca.
+
+        Args:
+            nombre (str): Nombre de la biblioteca.
+        """
+        self.nombre = nombre
         self._clientes: List[Cliente] = []
         self._materiales: List[Material_Bibliografico] = []
         self._prestamos: List[Prestamo] = []
-        self._contador_prestamos: int = 0 # Contador para asignar ID cuando se crea un préstamo
+        self._reservas: List[Reserva] = []
+        self._sanciones: List[Sancion] = []
+        self._categorias: List[Categoria] = []
 
-#------------------------------------------------------------------------------------------
-#  AGREGAR DATOS
-# -----------------------------------------------------------------------------------------    
+        self._contador_prestamos: int = 0
+        self._contador_reservas: int = 0
+        self._contador_sanciones: int = 0
 
-    # Agrega un cliente a la biblioteca, validando que no exista previamente.
+
     def agregar_cliente(self, cliente: Cliente) -> None:
-        for cli in self._clientes: # recorre la lista con la variable cli
-            if cli.get_codigo() == cliente.get_codigo(): # Verifica si el codigo ya existe
-                messagebox.showerror("Error", f"El cliente con código {cliente.get_codigo()} ya existe.")
-                return  # Evita que se agregue el duplicado
+        """
+        Agrega un cliente a la biblioteca.
 
-        # Si no existe, lo agrega a la lista    
+        Args:
+            cliente: Instancia de Cliente a agregar.
+
+        Raises:
+            ValueError: Si ya existe un cliente con el mismo código.
+        """
+        for cli in self._clientes: 
+            if cli.codigo == cliente.codigo:
+                messagebox.showerror("Error", f"El cliente con código {cliente.codigo} ya existe.")
+                return
         self._clientes.append(cliente)
-        messagebox.showinfo("Exito", f"Cliente {cliente.get_nombre()} agregado correctamente.")
+        messagebox.showinfo("Exito", f"Cliente {cliente.nombre} agregado correctamente.")
     
-    # Agrega un material bibliográfico, validando que no exista previamente.
+
     def agregar_material(self, material: Material_Bibliografico) -> None:
-        for mat in self._materiales: # recorre la lista con la variable mat
-            if mat.get_Id() == material.get_Id(): # Verifica si el ID ya existe
-                messagebox.showerror("Error", f"El material bibliografico con ID {material.get_Id()} ya existe.")
-                return  # Evita que se agregue el duplicado
-            
-        # Si no existe, lo agrega a la lista
+        """
+        Agrega un material bibliográfico.
+
+        Args:
+            material: Instancia de Material_Bibliografico a agregar.
+
+        Raises:
+            ValueError: Si ya existe un material con el mismo ID.
+        """
+        for mat in self._materiales: 
+            if mat.Id == material.Id:
+                messagebox.showerror("Error", f"El material bibliografico con ID {material.Id} ya existe.")
+                return 
         self._materiales.append(material)
-        messagebox.showinfo("Exito", f"Material {material.get_Id()} agregado correctamente.")
+        messagebox.showinfo("Exito", f"Material {material.titulo} agregado correctamente.")
 
-#------------------------------------------------------------------------------------------
-# BUSCAR DATOS
-# -----------------------------------------------------------------------------------------     
 
-    # Busca un cliente por su código.
+    def agregar_categoria(self, categoria: Categoria) -> None:
+        """
+        Agrega una categoría.
+
+        Args:
+            categoria: Instancia de Categoria a agregar.
+
+        Raises:
+            ValueError: Si ya existe una categoría con el mismo ID.
+        """
+        for cat in self._categorias:
+            if cat.id_categoria == categoria.id_categoria:
+                messagebox.showerror("Error", f"La categoria con ID {categoria.id_categoria} ya existe.")
+                return
+        self._categorias.append(categoria)
+        messagebox.showinfo("Exito", f"Categoria {categoria.nombre} agregada correctamente.")
+
+
+    def agregar_sancion(self, cliente: Cliente, motivo: str, monto: float) -> None:
+        """
+        Registra una sanción para un cliente.
+
+        Args:
+            cliente: Cliente sancionado.
+            motivo: Razón de la sanción.
+            monto: Monto económico de la sanción.
+        """
+        self._contador_sanciones += 1
+
+        sancion= Sancion(self._contador_sanciones, cliente, motivo, date.today(), monto)
+        cliente.marcar_vetado()
+
+        self._sanciones.append(sancion)
+        messagebox.showinfo("Éxito", f"Sanción {sancion.id_sancion} agregada correctamente.")
+
+
     def buscar_cliente(self, buscar_cod: int) -> None:
-        for cli in self._clientes:  # Recorre la lista de clientes
-            if cli.get_codigo() == buscar_cod:  # Compara el código buscado con cada cliente
-                messagebox.showinfo("Exito", f"Cliente encontrado:\n{cli}.")
-                return   # Termina el método si encuentra el cliente
-        # Si terminó el ciclo sin encontrar, muestra mensaje de error
+        """
+        Busca un cliente por código.
+
+        Args:
+            buscar_cod: Código del cliente.
+        """
+        for cli in self._clientes:  
+            if cli.codigo == buscar_cod:  
+                messagebox.showinfo("Éxito", f"Cliente encontrado:\n{cli}.")
+                return  
         messagebox.showerror("Error", f"No se encontró un cliente con ID {buscar_cod}.")    
     
-    # Busca un material bibliográfico por su ID.
+
     def buscar_material(self, buscar_cod: int) -> None:
-        for mat in self._materiales:  # Recorre la lista de materiales
-            if mat.get_Id() == buscar_cod:  # Compara el código buscado con cada material
-                messagebox.showinfo("Exito", f"Material bibliografico encontrado:\n{mat}.")
-                return  # Termina el método si encuentra el material
-        # Si terminó el ciclo sin encontrar, muestra mensaje de error
+        """
+        Busca un material bibliográfico por ID.
+
+        Args:
+            buscar_cod: ID del material bibliográfico.
+        """
+        for mat in self._materiales:  
+            if mat.Id == buscar_cod:  
+                messagebox.showinfo("Éxito", f"Material bibliografico encontrado:\n{mat}.")
+                return  
         messagebox.showerror("Error",f"No se encontró material bibliografico con ID {buscar_cod}.")
 
-    # Busca un préstamo por su ID.
+
     def buscar_prestamo(self, buscar_cod: int) -> None:
-        for pre in self._prestamos:  # Recorre la lista de préstamos
-            if pre.get_id() == buscar_cod:  # Compara el código buscado con cada préstamo
-                messagebox.showinfo("Exito", f"Prestamo encontrado:\n{pre}.")
-                return  # Termina el método si encuentra el prestamo
-        # Si terminó el ciclo sin encontrar, muestra mensaje de error
+        """
+        Busca un prestamo por ID.
+
+        Args:
+            buscar_cod: ID del prestamo.
+        """
+        for pre in self._prestamos:  
+            if pre.Id == buscar_cod:  
+                messagebox.showinfo("Éxito", f"Prestamo encontrado:\n{pre}.")
+                return  
         messagebox.showerror("Error", f"No se encontró prestamo con ID {buscar_cod}.")
-    
-#------------------------------------------------------------------------------------------
-# VER LISTADO DE DATOS
-# -----------------------------------------------------------------------------------------     
 
-    # Muestra la lista de todos los clientes registrados.
-    def ver_clientes(self) -> bool:
-        if not self._clientes:  # si la lista está vacía
+
+    def buscar_reserva(self, buscar_cod: int) -> None:
+        """
+        Busca una reserva por ID.
+
+        Args:
+            buscar_cod: ID de la reserva.
+        """
+        for res in self._reservas:
+            if res.id == buscar_cod:
+                messagebox.showinfo("Éxito", f"Reserva encontrada:\n{res}.")
+                return
+        messagebox.showerror("Error", f"No se encontró reserva con ID {buscar_cod}.")
+
+
+    def buscar_sancion(self, buscar_cod: int) -> None:
+        """
+        Busca una sanción por ID.
+
+        Args:
+            buscar_cod: ID de la sanción.
+        """
+        for san in self._sanciones:
+            if san.id_sancion == buscar_cod:
+                messagebox.showinfo("Éxito", f"Sanción encontrada:\n{san}")
+                return
+        messagebox.showerror("Error", f"No se encontró sanción con ID {buscar_cod}")    
+
+
+    def ver_clientes(self) -> None:
+        """
+        Muestra todos los clientes registradas.
+        """
+        if not self._clientes: 
             messagebox.showerror("Error", "No hay clientes registrados.")
-            return False
+            return 
         
-        lista = "\n".join(str(cli) for cli in self._clientes) # convierte cada cliente en texto
-        messagebox.showinfo("Listado de Clientes", lista) # muestra los clientes
-        return True
+        lista = "\n".join(str(cli) for cli in self._clientes) 
+        messagebox.showinfo("Listado de Clientes", lista) 
     
-    # Muestra la lista de materiales bibliográficos registrados.
-    def ver_materiales(self) -> bool:
-        if not self._materiales:  # si la lista está vacía
-            messagebox.showerror("Error", "No hay materiales bibliograficos registrados.")
-            return False
-        
-        lista = "\n".join(str(mat) for mat in self._materiales) # convierte cada material en texto
-        messagebox.showinfo("Listado de Materiales Bibliograficos", lista) # muestra los materiales
-        return True
-    
-    # Muestra la lista de préstamos registrados.
-    def ver_prestamos(self) -> bool:
-        if not self._prestamos:  # si la lista está vacía
-            messagebox.showerror("Error", "No hay prestamos registrados.")
-            return False
-        
-        lista= "\n".join(str(pre) for pre in self._prestamos) # convierte cada préstamo en texto
-        messagebox.showinfo("Listado de Prestamos", lista) # muestra los préstamos
-        return True
-    
-#------------------------------------------------------------------------------------------
-# PRESTAR MATERIAL
-# -----------------------------------------------------------------------------------------     
 
-    # Crea un préstamo de un material bibliográfico a un cliente específico.
-    def prestar_material(self, cod_cliente: int, cod_material: int) -> bool:
+    def ver_materiales(self) -> None:
+        """
+        Muestra todos los materiales registradas.
+        """
+        if not self._materiales: 
+            messagebox.showerror("Error", "No hay materiales bibliográficos registrados.")
+            return 
         
-        #validar que cliente exista
+        lista = "\n".join(str(mat) for mat in self._materiales) 
+        messagebox.showinfo("Listado de Materiales Bibliográficos", lista)
+    
+
+    def ver_prestamos(self) -> None:
+        """
+        Muestra todos los préstamos registradas.
+        """
+        if not self._prestamos: 
+            messagebox.showerror("Error", "No hay préstamos registrados.")
+            return 
+        
+        lista= "\n".join(str(pre) for pre in self._prestamos)
+        messagebox.showinfo("Listado de Préstamos", lista)
+    
+
+    def ver_reservas(self) -> None:
+        """
+        Muestra todas las reservas registradas.
+        """
+        if not self._reservas:
+            messagebox.showerror("Error", "No hay reservas registradas.")
+            return 
+        
+        lista= "\n".join(str(res) for res in self._reservas)
+        messagebox.showinfo("Listado de Reservas", lista)
+
+
+    def ver_sanciones(self) -> None:
+        """
+        Muestra todas las sanciones registradas.
+        """
+        if not self._sanciones:
+            messagebox.showerror("Error", "No hay sanciones registradas.")
+            return 
+        
+        lista= "\n".join(str(san) for san in self._sanciones)
+        messagebox.showinfo("Listado de Sanciones", lista)
+
+
+    def ver_categorias(self) -> None:
+        """
+        Muestra todas las categorías registradas.
+        """
+        if not self._categorias:
+            messagebox.showerror("Error", "No hay categorías registradas.")
+            return 
+        
+        lista= "\n".join(str(cat) for cat in self._categorias)
+        messagebox.showinfo("Listado de Categorías", lista)
+
+
+    def prestar_material(self, cod_cliente: int, cod_material: int) -> bool:
+        """
+        Realiza un préstamo de material a un cliente.
+
+        Args:
+            cod_cliente: Código del cliente.
+            cod_material: ID del material.
+
+        Returns:
+            True si el préstamo fue exitoso, False en caso contrario.
+        """
         cliente: Optional[Cliente] = None
         for cli in self._clientes:
-            if cli.get_codigo() == cod_cliente:
+            if cli.codigo == cod_cliente:
                 cliente= cli
                 break
 
@@ -123,15 +273,13 @@ class Biblioteca:
             messagebox.showerror("Error", f"No existe un cliente con código {cod_cliente}.")
             return False
         
-        #validar que el cliente no este vetado
         if cliente.es_vetado():
-            messagebox.showerror("Error", f"El cliente {cliente.get_nombre()} está vetado.")
+            messagebox.showerror("Error", f"El cliente {cliente.nombre} está vetado.")
             return False
 
-        # validar que el material exista
         material: Optional[Material_Bibliografico] = None
         for mat in self._materiales:
-            if mat.get_Id() == cod_material:
+            if mat.Id == cod_material:
                 material = mat
                 break
 
@@ -139,304 +287,435 @@ class Biblioteca:
             messagebox.showerror("Error", f"No existe material bibliográfico con código {cod_material}.")
             return False
         
-        #validar que el material no este reservado o si esta resrvado que sea el mismo cliente del prestamo
-        if material.get_reservado():
-            if material.get_cliente_reserva()  != cod_cliente:
-                messagebox.showerror("Error", f"El material bibliográfico {material.get_Id()} está reservado por otro cliente.")
+        reserva: Optional[Reserva]= None
+        for res in self._reservas:
+            if res.mat.Id == cod_material:
+                reserva= res
+                break
+        
+        if reserva is not None:
+            if reserva.cli.codigo != cod_cliente:
+                messagebox.showerror("Error", f"El material {material.Id} está reservado por otro cliente")
                 return False
             else:
-                # Si es el mismo cliente que lo reservó, se permite el préstamo
-                material.cancelar_reserva(cod_cliente)
-        
-        #validar que el material este disponible 
-        if material.get_estado() != "disponible":
-            messagebox.showerror("Error", f"El material bibliográfico {material.get_Id()} no está disponible.")
-            return False
+                self._reservas.remove(reserva)
 
-        # Se crea el ID del préstamo
+        if material.get_estado() != "disponible":
+            messagebox.showerror("Error", f"El material bibliográfico {material.Id} no está disponible.")
+            return False
+        
         self._contador_prestamos += 1
         nuevo_id = self._contador_prestamos
 
-        # Se establecen las fechas del prestamo y entrega 
         fecha_prestamo = date.today()
         fecha_entrega = fecha_prestamo + timedelta(days=7)
 
-        # Se crea el prestamo y se añade a la lista
-        prestamo = Prestamo(nuevo_id, cod_cliente, cod_material, fecha_prestamo, fecha_entrega)
+        prestamo = Prestamo(nuevo_id, cliente, material, fecha_prestamo, fecha_entrega)
         self._prestamos.append(prestamo)
 
-        # Cambiar estado del material
         material.marcar_no_disponible()
 
-        messagebox.showinfo("Préstamo creado con exito", f"Préstamo creado. ID={nuevo_id}, Cliente={cliente.get_nombre()}, Fecha de entrega {fecha_entrega}")
+        messagebox.showinfo("Préstamo creado con exito", f"Préstamo creado. ID={nuevo_id}, Cliente={cliente.nombre}, Fecha de entrega {fecha_entrega}")
         return True
-    
-#------------------------------------------------------------------------------------------
-# RENOVAR PRESTAMO
-# -----------------------------------------------------------------------------------------     
 
-    # Renueva un préstamo existente agregando 7 días a la fecha de entrega.
+
     def renovar_prestamo(self, cod_cliente: int, cod_material: int) -> bool:
+        """
+        Renueva un préstamo existente.
 
-        # Verificar que el cliente exista y no esté vetado
+        Args:
+            cod_cliente: Código del cliente.
+            cod_material: ID del material.
+
+        Returns:
+            True si la renovación fue exitosa, False en caso contrario.
+        """
         cliente:Optional[Cliente] = None
         for cli in self._clientes:
-            if cli.get_codigo() == cod_cliente:
+            if cli.codigo == cod_cliente:
                 cliente= cli
                 break
 
-        # Si el cliente no existe 
         if cliente is None:
             messagebox.showerror("Error", f"No existe cliente con ID {cod_cliente}.")
             return False
         
-        # Si el cliente está vetado 
         if cliente.es_vetado():
-            messagebox.showerror("Error", f"El cliente {cliente.get_nombre()} con ID {cod_cliente} se encuentra vetado.")
+            messagebox.showerror("Error", f"El cliente {cliente.nombre} con ID {cod_cliente} se encuentra vetado.")
             return False
 
-        # Verificar que el material exista y no esté reservado
         material: Optional[Material_Bibliografico] = None
         for mat in self._materiales:
-            if mat.get_Id() == cod_material:
+            if mat.Id == cod_material:
                 material= mat
                 break
 
-        # Si el material no existe 
         if material is None:
             messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
             return False
         
-        # Si el material esta reservado por un cliente diferente al del prestamo
-        if material.get_reservado() and material.get_cliente_reserva() != cod_cliente:
-            messagebox.showerror("Error", f"El material {cod_material} está reservado por otro cliente.")
-            return False
+        for reserva in self._reservas:
+            if reserva.mat.Id == cod_material and reserva.cli.codigo != cod_cliente:
+                messagebox.showerror("Error", f"El material bibliográfico {material.titulo} está reservado por otro cliente.")
+                return False
         
-        # Validar que el prestamo exista y que el cliente sea el mismo del material
         prestamo :Optional[Prestamo] = None
         for pre in self._prestamos:
-            if pre.get_cod_cliente() == cod_cliente and pre.get_cod_material() == cod_material:
+            if pre.cliente.codigo == cod_cliente and pre.material.Id == cod_material:
                     prestamo= pre
                     break
 
-        # Si el prestamo no existe    
         if prestamo is None:
-            messagebox.showerror("Error", f"No existe un prestamo del cliente con ID {cod_cliente} con el material bibliografico {cod_material}.")
+            messagebox.showerror("Error", f"No existe un prestamo del cliente con ID {cod_cliente} con el material bibliografico {material.titulo}.")
             return False       
 
-        # Cambio de la fecha de la entrega
         nueva_fecha= prestamo.get_fecha_entrega() + timedelta(days=7)
         prestamo.renovar_prestamo(nueva_fecha)
 
-        # Asegurar que el material siga marcado como no disponible
         material.marcar_no_disponible()
 
-        messagebox.showinfo("Renovación exitosa", f"Prestamo con ID: {prestamo.get_id()} renovado. Nueva fecha de entrega: {nueva_fecha}.")
+        messagebox.showinfo("Renovación exitosa", f"Prestamo con ID: {prestamo.Id} renovado. Nueva fecha de entrega: {nueva_fecha}.")
         return True
-  
-#------------------------------------------------------------------------------------------
-# DEVOLVER MATERIAL#
-# -----------------------------------------------------------------------------------------     
 
-    # Devuelve un material prestado por un cliente.
+
     def devolver_material(self, cod_cliente: int, cod_material: int) -> bool:
-        
-        # Verificar que exista cliente
+        """
+        Registra la devolución de un material.
+
+        Args:
+            cod_cliente: Código del cliente.
+            cod_material: ID del material.
+
+        Returns:
+            True si la devolución fue exitosa, False en caso contrario.
+        """
         cliente: Optional[Cliente] = None
         for cli in self._clientes:
-            if cli.get_codigo() == cod_cliente:
+            if cli.codigo == cod_cliente:
                 cliente= cli
                 break
 
-        # Si el cliente no existe
         if cliente is None:
             messagebox.showerror("Error", f"No existe cliente con ID {cod_cliente}.")
             return False
 
-        # Verificar que exista el material
         material: Optional[Material_Bibliografico] = None
         for mat in self._materiales:
-            if mat.get_Id() == cod_material:
+            if mat.Id == cod_material:
                 material= mat
                 break
         
-        # Si el material no existe
         if material is None:
             messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
             return False
 
-        # Validar que el prestamo exista y que el cliente sea el mismo del prestamo
         prestamo: Optional[Prestamo] = None
         for pre in self._prestamos:
-            if pre.get_cod_cliente() == cod_cliente and pre.get_cod_material() == cod_material:
+            if pre.cliente.codigo == cod_cliente and pre.material.Id == cod_material:
                     prestamo= pre
                     break
 
-        # Si el prestamo no existe
         if prestamo is None:
-            messagebox.showerror("Error", f"No existe un prestamo del cliente con ID {cod_cliente} con el material bibliografico {cod_material}.")
+            messagebox.showerror("Error", f"No existe un prestamo del cliente {cod_cliente} con el material bibliografico {cod_material}.")
             return False
 
-        # Verificar que la devolución este a tiempo, si no, se marca como vetado
         fecha_devolucion= date.today()
         if fecha_devolucion > prestamo.get_fecha_entrega():
             cliente.marcar_vetado()
             dias = (fecha_devolucion - prestamo.get_fecha_entrega()).days
-            messagebox.showwarning("Devolución", f"Devolución con retraso de {dias} día(s). Cliente {cliente.get_nombre()} ha sido vetado.")
+            self.registrar_sancion(cod_cliente, "Retraso en la devolución", prestamo.get_fecha_entrega())
+            messagebox.showwarning("Devolución", f"Devolución con retraso de {dias} día(s). Cliente {cliente.nombre} ha sido vetado.")
         else:
-            messagebox.showinfo("Devolución", f"Devolución realizada a tiempo. ¡Gracias {cliente.get_nombre()}!")
+            messagebox.showinfo("Devolución", f"Devolución realizada a tiempo. ¡Gracias {cliente.nombre}!")
 
-        # Cambiar el estado del material
         material.marcar_disponible()
 
-        # Eliminar prestamo de la lista de prestamos
         self._prestamos.remove(prestamo)
 
-        messagebox.showinfo("Devolución", f"Devolución realizada con éxito.\nPréstamo ID: {prestamo.get_id()}, Cliente: {cliente.get_nombre()}, Material bibliografico: {cod_material}.")
+        messagebox.showinfo("Devolución", f"Devolución realizada con éxito.\nPréstamo ID: {prestamo.Id}, Cliente: {cliente.nombre}, Material bibliografico: {material.titulo}.")
         return True
-    
-#------------------------------------------------------------------------------------------
-# RESERVAR MATERIAL
-# -----------------------------------------------------------------------------------------     
+   
 
-    # Permite reservar un material bibliográfico para un cliente.
     def reservar_material(self, cod_cliente: int, cod_material: int) -> bool:
+        """
+        Crea una reserva de material.
 
-        # Validar que el cliente exista
+        Args:
+            cod_cliente: Código del cliente.
+            cod_material: ID del material.
+
+        Returns:
+            True si la reserva fue exitosa, False en caso contrario.
+        """
         cliente: Optional[Cliente] = None
         for cli in self._clientes:
-            if cli.get_codigo() == cod_cliente:
+            if cli.codigo == cod_cliente:
                 cliente= cli
                 break
         
-        # Si el cliente no existe
         if cliente is None: 
             messagebox.showerror("Error", f"No existe un cliete con ID {cod_cliente}.")
             return False
 
-        # Validar que el cliente no esté vetado
         if cliente.es_vetado():
-            messagebox.showerror("Error", f"El cliente {cliente.get_nombre()} está vetado.")
+            messagebox.showerror("Error", f"El cliente {cliente.nombre} está vetado.")
             return False
         
-        # Validar que el material exista
         material: Optional[Material_Bibliografico] = None
         for mat in self._materiales:
-            if mat.get_Id() == cod_material:
+            if mat.Id == cod_material:
                 material= mat
                 break
 
-        # Si el material no existe
         if material is None:
             messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
             return False
 
-        # Validar que el material este disponible
         if material.get_estado() != "disponible":
             messagebox.showerror("Error", f"El material bibliografico con ID {cod_material} NO se puede reservar porque está prestado.")
             return False
 
-        # Validar que el material no este reservado
-        if material.get_reservado():
-            messagebox.showerror("Error", f"El material bibliografico con ID {cod_material} ya se encuentra reservado por el cliente {cliente.get_nombre()}.")
-            return False
+        for res in self._reservas:
+            if res.mat.Id == cod_material and res.get_estado() == "activa":
+                messagebox.showerror("Error", f"El material bibliografico con ID {cod_material} ya está reservado por el cliente {res.cli.nombre}.")
+                return False
 
-        # Marcar el material como reservado
-        material.reservar(cod_cliente)
+        self._contador_reservas += 1
+        nueva_reserva = Reserva(self._contador_reservas, cliente, material, date.today(), "activa")
 
-        messagebox.showinfo("Material reservado con éxito", f"El material bibliografico {cod_material} ha sido reservado exitosamente por el cliente: {cliente.get_nombre()}.")
+        self._reservas.append(nueva_reserva)
+
+        messagebox.showinfo("Éxito", f"El material bibliografico {material.titulo} ha sido reservado exitosamente por el cliente: {cliente.nombre}.")
         return True
     
-#------------------------------------------------------------------------------------------
-# CANCELAR RESERVA
-# -----------------------------------------------------------------------------------------     
-    # Cancela la reserva de un material bibliográfico para un cliente específico.
+
     def cancelar_reserva(self, cod_cliente: int, cod_material: int) -> bool:
-        # Validar que el cliente exista
+        """
+        Cancela una reserva de material.
+
+        Args:
+            cod_cliente: Código del cliente.
+            cod_material: ID del material.
+
+        Returns:
+            True si la cancelación fue exitosa, False en caso contrario.
+        """
         cliente: Optional[Cliente] = None
         for cli in self._clientes:
-            if cli.get_codigo() == cod_cliente:
+            if cli.codigo == cod_cliente:
                 cliente= cli
                 break
-        # Si el cliente no existe
+
         if cliente is None:
             messagebox.showerror("Error", f"No existe un cliente con ID {cod_cliente}.")
             return False
-        # Validar que el material exista
+
         material: Optional[Material_Bibliografico] = None
         for mat in self._materiales:
-            if mat.get_Id() == cod_material:
+            if mat.Id == cod_material:
                 material= mat
                 break
-        # Si el material no existe
+        
         if material is None:
             messagebox.showerror("Error", f"No existe material bibliografico con ID {cod_material}.")
             return False
-        # Validar que el material este reservado
-        if not material.get_reservado():
-            messagebox.showerror("Error", f"El material bibliografico con ID {cod_material} No se encuentra reservado.")
-            return False
-        # Cancelar la reserva si es el mismo cliente del prestamo, cambiar el estado de "reserva"
-        if material.cancelar_reserva(cod_cliente):
-            messagebox.showinfo("Reserva cancelada", f"La reserva del material {cod_material} ha sido cancelada por el cliente {cliente.get_nombre()}.")
-            return True
-        else:
-            messagebox.showwarning("Cancelar reserva", f"El material {cod_material} fue reservado por otro cliente.")
-            return False
 
-#------------------------------------------------------------------------------------------
-# ELIMINAR PRESTAMO
-# -----------------------------------------------------------------------------------------     
-    # Elimina un préstamo existente y marca el material como disponible nuevamente.
-    def eliminar_prestamo(self, cod_prestamo: int) -> None:
-        # Validar que el prestamo exista
-        prestamo: Optional[Prestamo] = None
-        for pre in self._prestamos:
-            if pre.get_id() == cod_prestamo:
-                prestamo = pre
+        reserva: Optional[Reserva] = None
+        for res in self._reservas:
+            if res.mat.Id == cod_material and res.cli.codigo == cod_cliente:
+                reserva= res
                 break
-        # Si el prestamo no existe
-        if prestamo is None:
-            messagebox.showerror("Error", f"No existe un préstamo con ID {cod_prestamo}.")
-        # Buscar el material del prestamo
-        material: Optional[Material_Bibliografico] = None
-        for mat in self._materiales:
-            if  mat.get_Id() == prestamo.get_cod_material():
-                material= mat
+
+        if reserva is None:
+            messagebox.showerror("Error", f"No existe reserva del material {material.titulo} realizada por el cliente {cliente.nombre}.")
+            return False
+
+        self._reservas.remove(reserva)
+
+        messagebox.showinfo("Reserva cancelada", f"La reserva del material {material.titulo} ha sido cancelada por el cliente {cliente.nombre}.")
+        return True
+
+
+    def registrar_sancion(self, cod_cliente: int, motivo: str, fecha_entrega: date) -> None:
+        """
+        Registra una sanción automática por retraso.
+
+        Args:
+            cod_cliente: Código del cliente sancionado.
+            motivo: Motivo de la sanción.
+            fecha_entrega: Fecha límite de entrega incumplida.
+        """
+        cliente: Optional[Cliente] = None
+        for cli in self._clientes:
+            if cli.codigo == cod_cliente:
+                cliente= cli
                 break
-        # Volver a marcar el material como disponible
-        if material is not None:
-            material.marcar_disponible()
-        # Eliminar el prestamo de la lista
-        self._prestamos.remove(prestamo)
+        
+        if cliente is None:
+            messagebox.showerror("Error", f"No existe un cliente con código {cod_cliente}.")
+            return False
+        
+        self._contador_sanciones += 1
+        fecha_sancion= date.today()
 
-        messagebox.showinfo("Prestamo eliminado con éxito", f"Préstamo con ID {cod_prestamo} eliminado correctamente.")
-    
-#------------------------------------------------------------------------------------------
-# INFORME DE CLIENTES VETADOS
-# -----------------------------------------------------------------------------------------     
+        dias_retraso= (fecha_sancion - fecha_entrega).days
+        if dias_retraso < 1:
+            dias_retraso= 1
 
-    # Muestra una lista de todos los clientes que se encuentran vetados
-    def clientes_vetados(self) -> bool:
-        vetados = [cli for cli in self._clientes if cli.es_vetado()]
+        monto= dias_retraso * 1000
+
+        sancion= Sancion(self._contador_sanciones, cliente, motivo, fecha_sancion, monto)
+        self._sanciones.append(sancion)
+
+        messagebox.showwarning("Sanción registrada", f"Sanción ID {self._contador_sanciones} registrada al cliente {cliente.nombre}, Motivo: {motivo}, Fecha: {fecha_sancion}, Días de retraso: {dias_retraso}, Monto: ${monto}")
+
+
+    def clientes_vetados(self) -> None:
+        """
+        Muestra los clientes que se encuentran vetados.
+        """
+        vetados = []
+        for cli in self._clientes:
+            if cli.es_vetado():
+                vetados.append(cli)
+
         if not vetados:
             messagebox.showinfo("Clientes vetados", "No hay clientes vetados.")
-            return False
-                    # join une todas las cadenas generadas por el bucle en una sola cadena.
-        lista = "\n".join(str(cli) for cli in vetados) # Llama al metodo __str__() de la clase cliente
+            return 
+        
+        lista = "\n".join(str(cli) for cli in vetados) 
         messagebox.showinfo("Lista de Clientes vetados", lista)
+
+
+    def levantar_sancion(self, id_sancion: int) -> bool:
+        """
+        Levanta una sanción existente.
+
+        Args:
+            id_sancion: ID de la sanción.
+
+        Returns:
+            True si la sanción fue eliminada, False en caso contrario.
+        """
+        sancion: Optional[Sancion] = None
+        for san in self._sanciones:
+            if san.id_sancion == id_sancion:
+                sancion= san
+                break
+
+        if sancion is None:
+            messagebox.showerror("Error", f"No existe sanción con ID {id_sancion}.")
+            return False
+        
+        cliente= sancion.cliente
+        if not cliente.es_vetado():
+            messagebox.showinfo("Levantar sanción", f"El cliente {cliente.nombre} no está vetado actualmente.")
+            return False
+        
+        cliente.quitar_vetado()
+
+        self._sanciones.remove(sancion)
+
+        messagebox.showinfo("Levantar sanción", f"Sancion con ID {id_sancion} elimianda. El cliente {cliente.nombre} ya no está vetado.")
+        return True
+
+
+    def eliminar_material(self, codigo: int) -> bool:
+        """
+        Elimina un material de la biblioteca.
+
+        Args:
+            codigo: ID del material.
+
+        Returns:
+            True si el material fue eliminado, False en caso contrario.
+        """
+        material= None
+
+        for mat in self._materiales:
+            if mat.Id == codigo:
+                material= mat
+                break
+        
+        if material is None:
+            messagebox.showerror("Error", f"No existe material bibliográfico con ID {codigo}.")
+            return False
+        
+        if material.get_estado == "prestado":
+            messagebox.showerror("Error", f"No se puede eliminar el material bibliográfico {material.titulo} porque está en préstamo.")
+            return False
+        
+        if material.get_estado == "reservado":
+            messagebox.showerror("Error", f"No se puede eliminar el material bibliográfico {material.titulo} porque está reservado.")
+            return False
+
+        self._materiales.remove(material)
+
+        messagebox.showinfo("Eliminar material", f"El material {codigo} - {material.titulo} ha sido eliminado con éxito.")
         return True
     
-#------------------------------------------------------------------------------------------
-# METODOS DE VALIDACIÓN
-# -----------------------------------------------------------------------------------------     
-    # Solicita al usuario ingresar un texto que contenga únicamente letras.
-    def ingresar_solo_letras(self, text1: str, text2: str) -> str:
 
-        while True: # Se repetirá hasta que se cumpla una condición de salida dentro del bucle.
+    def eliminar_cliente(self, codigo: int) -> bool:
+        """
+        Elimina un cliente de la biblioteca.
+
+        Args:
+            codigo: Código del cliente.
+
+        Returns:
+            True si el cliente fue eliminado, False en caso contrario.
+        """
+        cliente= None
+
+        for cli in self._clientes:
+            if cli.codigo == codigo:
+                cliente= cli
+                break
+        
+        if cliente is None:
+            messagebox.showerror("Error", f"No existe cliente con código {codigo}.")
+            return False
+        
+        for prestamo in self._prestamos:
+            if prestamo.cliente.codigo == codigo:
+                messagebox.showerror("Error", f"No se puede eliminar al cliente {cliente.nombre} tiene préstamos activos.")
+                return False
+        
+        for reserva in self._reservas:
+            if reserva.cli.codigo == codigo:
+                messagebox.showerror("Error", f"No se puede eliminar al cliente {cliente.nombre} porque tiene reservas activas.")
+                return False
+
+        self._clientes.remove(cliente)
+
+        messagebox.showinfo("Eliminar cliente", f"El cliente {cliente.nombre} ha sido eliminado con éxito.")
+        return True
+
+
+    def ingresar_solo_letras(self, text1: str, text2: str) -> str:
+        """
+        Solicita una entrada de texto que solo contenga letras.
+
+        Args:
+            text1: Título de la ventana de diálogo.
+            text2: Mensaje de la ventana de diálogo.
+
+        Returns:
+            Cadena de texto válida ingresada por el usuario.
+        """
+        while True: 
             valor= simpledialog.askstring(text1, text2)
-            if valor is None:
+
+            if valor is None: 
                 return None
-            if all(palabra.isalpha() for palabra in valor.split()): # Se verifica que cada palabra tenga solo letras (sin números ni símbolos).
-                return valor.strip()  # elimina espacios al inicio y final de la cadena.
+            
+            valor= valor.strip()  
+
+            if not valor: 
+                messagebox.showerror("Error", "El campo no puede estar vacio. Intente de nuevo.")
+                continue
+            
+            if all(palabra.isalpha() for palabra in valor.split()):
+                return valor  
+            
             messagebox.showerror("Error", "Solo se permiten letras. Intente de nuevo.")
