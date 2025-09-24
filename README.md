@@ -86,6 +86,12 @@ pip install sqlalchemy psycopg2
      - *Sanciones*: asignar, consultar y gestionar restricciones.  
      - *Sedes y categorías*: organizar la biblioteca en diferentes sucursales y clasificaciones.  
 
+5.1. **Acceso como administrador**  
+   Para probar todas las funcionalidades, puedes usar las siguientes credenciales:
+
+   - Usuario: admin
+   - Contraseña: Admin1234!
+
 6. *Interfaz gráfica*  
    Todas las interacciones se realizan mediante *ventanas emergentes (messagebox y simpledialog de Tkinter)*.  
 
