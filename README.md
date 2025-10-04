@@ -1,101 +1,57 @@
-# Sistema de Gestión de Biblioteca  
+# Sistema de Gestión de Biblioteca (Versión API)
 
-Este proyecto implementa un sistema de gestión de biblioteca con *Python, utilizando principios de **Programación Orientada a Objetos (POO)* como *herencia, polimorfismo, encapsulamiento y reutilización de código, además de **Tkinter* para la interfaz gráfica mediante ventanas emergentes.  
+Este proyecto implementa un **Sistema de Gestión de Biblioteca** desarrollado en **Python**, utilizando principios de **Programación Orientada a Objetos (POO)** y ahora adaptado a un **entorno API**.  
+Esta nueva versión permite la comunicación mediante endpoints REST, gestionando la información directamente a través de peticiones HTTP.
 
-Ahora, el sistema se integra con una *base de datos en la nube (Neon)* usando *SQLAlchemy ORM*, lo que permite un manejo más robusto y escalable de la información.  
+## Características principales
 
-El sistema administra *clientes, **material bibliográfico, **sedes, **usuarios, **reservas, **sanciones* y *categorías*, incluyendo funcionalidades de búsqueda, registro, préstamos, renovaciones y devoluciones.  
+- Arquitectura basada en **API REST**.  
+- Integración con **ORM (SQLAlchemy)** para manejo de base de datos.  
+- Entidades principales: `Sede`, `Usuario`, `Sanción`, `Reserva` y `Categoría`.  
+- Conexión con base de datos en la nube mediante **Neon**.  
+- Código modular y escalable.  
+- Preparado para despliegue y pruebas desde herramientas como **Swagger UI** o **Postman**.  
 
----
+## Instalación y ejecución
+
+1. **Clona este repositorio:**
+   ```bash
+   git clone <URL-del-repositorio>
+   cd Proyecto
+   ```
+
+2. **Instala las dependencias del proyecto:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Ejecuta la API:**
+   ```bash
+   uvicorn main:app --reload
+   ```
 
 ## Estructura del proyecto
-- main.py → Archivo principal que contiene los menús e inicia la aplicación.  
-- Biblioteca.py → Lógica central del sistema (gestión de clientes, materiales, préstamos, reservas y base de datos).  
-- Cliente.py → Definición de las clases Cliente, Estudiante, Profesor y Empleado.  
-- Material_Bibliografico.py → Manejo de materiales (estado, reservas, disponibilidad).  
-- Prestamo.py → Definición de la clase Prestamo y sus operaciones.  
-- Sede.py → Entidad que representa las sedes de la biblioteca.  
-- Usuario.py → Entidad que gestiona los usuarios del sistema.  
-- Sancion.py → Entidad que administra las sanciones aplicadas a los clientes.  
-- Reserva.py → Entidad encargada de las reservas de materiales.  
-- Categoria.py → Entidad que clasifica los materiales bibliográficos.  
 
----
+```
+Proyecto/
+│
+├── app/
+│   ├── models/           # Entidades y relaciones ORM
+│   ├── routers/          # Rutas de la API
+│   ├── schemas/          # Esquemas Pydantic
+│   ├── core/             # Configuración principal
+│   └── main.py           # Punto de entrada de la API
+│
+├── requirements.txt
+└── README.md
+```
 
-## Requisitos
-Antes de ejecutar el proyecto, asegúrate de tener instalado:  
-- Python *3.9+*  
-- Tkinter (incluido en la mayoría de instalaciones de Python)  
-- SQLAlchemy  
-- Psycopg2 (para la conexión con PostgreSQL en Neon)  
-- Una cuenta y base de datos creada en [*Neon*](https://neon.tech/)  
+## Notas
 
-Instalación de dependencias:  
-bash
-pip install sqlalchemy psycopg2
-
-
----
-
-##  Ejecución paso a paso
-
-1. *Clonar o descargar el repositorio en Visual Studio Code*  
-   bash
-   git clone <URL-del-repositorio>
-   cd <nombre-del-proyecto>
-   
-
-2. *Configurar las variables de entorno*  
-   Crea un archivo .env en la raíz del proyecto con tu cadena de conexión de Neon:  
-   
-   DATABASE_URL=postgresql+psycopg2://usuario:password@host/dbname
-   
-
-3. *Verificar que todos los archivos están en la carpeta del proyecto*:  
-   - main.py  
-   - Biblioteca.py  
-   - Cliente.py  
-   - Material_Bibliografico.py  
-   - Prestamo.py  
-   - Sede.py  
-   - Usuario.py  
-   - Sancion.py  
-   - Reserva.py  
-   - Categoria.py  
-
-4. *Ejecutar el archivo principal*  
-   bash
-   python main.py
-   
-
-5. *Uso del programa*  
-   - Al ejecutar, se abrirá el *menú principal* con opciones:  
-     1. Gestión de clientes  
-     2. Gestión de materiales bibliográficos  
-     3. Gestión de préstamos  
-     4. Gestión de reservas  
-     5. Gestión de sanciones  
-     6. Gestión de sedes y categorías  
-     0. Salir  
-
-   - Dentro de cada sección podrás:  
-     - *Clientes*: agregar, buscar, listar y ver vetados.  
-     - *Materiales*: agregar, buscar, listar, reservar, cancelar reservas.  
-     - *Préstamos*: prestar material, ver préstamos, buscar, renovar, devolver, eliminar.  
-     - *Reservas*: registrar, consultar y cancelar.  
-     - *Sanciones*: asignar, consultar y gestionar restricciones.  
-     - *Sedes y categorías*: organizar la biblioteca en diferentes sucursales y clasificaciones.  
-
-5.1. **Acceso como administrador**  
-   Para probar todas las funcionalidades, puedes usar las siguientes credenciales:
-
-   - Usuario: admin
-   - Contraseña: Admin1234!
-
-6. *Interfaz gráfica*  
-   Todas las interacciones se realizan mediante *ventanas emergentes (messagebox y simpledialog de Tkinter)*.  
-
----
+- Asegúrate de tener **Python 3.10** o superior.  
+- Antes de ejecutar el proyecto, instala los **requirements**.  
+- Accede a la documentación interactiva en:  
+   `http://127.0.0.1:8000/docs`  
 
 ##  Autores
 Proyecto académico desarrollado en Python con integración ORM y Neon por:  
